@@ -30,6 +30,7 @@ jobs:
             -re \
             -loop 1 -i background.jpg \
             -i audio.m4a \
+            -vf "scale=1280:-2" \
             -c:v libx264 \
             -preset medium \
             -tune stillimage \
