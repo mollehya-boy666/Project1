@@ -1,0 +1,42 @@
+name: Stream Long Audio with Fixed Background to RTMP
+
+on:
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  stream-to-rtmp:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install FFmpeg and Curl
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg curl
+
+      - name: Download Audio and Image
+        run: |
+          # Download audio file
+          curl -o audio.m4a "http://103.120.18.91/files/videoplayback.m4a"
+
+          # Download image
+          curl -o background.jpg "https://cdn.pixabay.com/photo/2023/03/25/20/30/podcast-7876792_1280.jpg"
+
+          # Ensure files are downloaded
+          ls -al
+
+      - name: Stream to RTMP
+        run: |
+          ffmpeg \
+            -re \
+            -loop 1 -i background.jpg \
+            -i audio.m4a \
+            -c:v libx264 \
+            -preset medium \
+            -tune stillimage \
+            -b:v 2000k \
+            -pix_fmt yuv420p \
+            -c:a aac \
+            -b:a 128k \
+            -maxrate 2000k \
+            -bufsize 4000k \
+            -f flv "rtmps://live-api-s.facebook.com:443/rtmp/FB-956349449873596-0-AbxRdrgdfeDYxdC3"
