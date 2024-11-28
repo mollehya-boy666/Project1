@@ -16,7 +16,7 @@ jobs:
       - name: Download Audio and Image
         run: |
           # Download audio file
-          curl -o audio.m4a "http://103.120.18.91/files/videoplayback.m4a"
+          curl -o audio.m4a "https://rr1---sn-5hneknes.googlevideo.com/videoplayback?expire=1732803359&ei=vyZIZ-WkEcOw9fwP6MeI4Qo&ip=36.72.215.50&id=o-AHx1V3DZZKnYZ8H4gzSnICnjBrEPcq_EOiuSHiqRg31N&itag=140&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ==&bui=AQn3pFTvnOhy-AD1LrS52cGtVl5M7ksgbw7pTgMbmQegetrAPuO-vcFAo4HZfNNIPkXxwali8ovjBMKn&vprv=1&mime=audio/mp4&rqh=1&gir=yes&clen=386246118&dur=23866.048&lmt=1709760042173687&keepalive=yes&fexp=24350302,24350590,24350655,24350675,24350705,24350737,24350838,51326932,51335594&c=ANDROID_VR&txp=5432434&sparams=expire,ei,ip,id,itag,source,requiressl,xpc,bui,vprv,mime,rqh,gir,clen,dur,lmt&sig=AJfQdSswRgIhANz9lKXQJuj-Pl0HT5Q_w2zMILWDMgb7rg7zwl3fMWNHAiEAvqwGHhG1rv3w4I_wivgweJ0OeYeb4ZOilIQyXss1Rrs=&rm=sn-2uuxa3vh-wvb67s,sn-npo6s76&rrc=79,104,191&req_id=47f101413c06a3ee&rms=rdu,au&ipbypass=yes&redirect_counter=3&cm2rm=sn-aige6l7z&cms_redirect=yes&cmsv=e&met=1732781786,&mh=TR&mip=197.253.209.103&mm=34&mn=sn-5hneknes&ms=ltu&mt=1732781549&mv=m&mvi=1&pl=19&tso=1&lsparams=ipbypass,met,mh,mip,mm,mn,ms,mv,mvi,pl,rms,tso&lsig=AGluJ3MwRQIgTJP9qonWDJAcSDAISH2kBjq5eXDyAR7DzTf6j22YEVACIQCRupO0rxMvgJjtqf47POG4ODqo-67KVlJG0YEWDGYKRA=="
 
           # Download image
           curl -o background.jpg "https://cdn.pixabay.com/photo/2023/03/25/20/30/podcast-7876792_1280.jpg"
@@ -40,4 +40,4 @@ jobs:
             -b:a 128k \
             -maxrate 2000k \
             -bufsize 4000k \
-            -f flv "rtmps://live-api-s.facebook.com:443/rtmp/FB-956349449873596-0-AbxRdrgdfeDYxdC3"
+            -f flv "rtmps://live-api-s.facebook.com:443/rtmp/FB-957045479803993-0-AbwX4heT_DJvJqrc"
