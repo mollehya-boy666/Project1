@@ -1,0 +1,58 @@
+name: Test V2Ray Installation
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test-v2ray:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Update and Install Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y wget unzip
+
+    - name: Download and Install V2Ray
+      run: |
+        wget https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip -O v2ray.zip
+        sudo unzip v2ray.zip -d /usr/local/v2ray/
+        sudo cp /usr/local/v2ray/systemd/v2ray.service /etc/systemd/system/
+        sudo systemctl enable v2ray
+
+    - name: Configure V2Ray
+      run: |
+        sudo mkdir -p /usr/local/etc/v2ray/
+        echo '{
+          "log": {
+            "loglevel": "warning"
+          },
+          "inbounds": [
+            {
+              "port": 1080,
+              "protocol": "socks",
+              "settings": {}
+            }
+          ],
+          "outbounds": [
+            {
+              "protocol": "freedom",
+              "settings": {}
+            }
+          ]
+        }' | sudo tee /usr/local/etc/v2ray/config.json
+
+    - name: Start V2Ray Service
+      run: |
+        sudo systemctl start v2ray
+        sudo systemctl status v2ray
+
+    - name: Test V2Ray
+      run: |
+        curl -x socks5h://127.0.0.1:1080 http://www.google.com -m 10
