@@ -1,4 +1,4 @@
-name: Test V2Ray Installation
+name: V2Ray Installation and Testing
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  test-v2ray:
+  install-v2ray:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,18 +17,20 @@ jobs:
     - name: Update and Install Dependencies
       run: |
         sudo apt update
-        sudo apt install -y wget unzip
+        sudo apt install -y curl
 
     - name: Download and Install V2Ray
       run: |
-        wget https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip -O v2ray.zip
-        sudo unzip v2ray.zip -d /usr/local/v2ray/
-        sudo cp /usr/local/v2ray/systemd/v2ray.service /etc/systemd/system/
-        sudo systemctl enable v2ray
+        curl -O https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh
+        sudo bash install-release.sh
+
+    - name: Verify Installation
+      run: |
+        sudo systemctl status v2ray || exit 1
+        v2ray -version
 
     - name: Configure V2Ray
       run: |
-        sudo mkdir -p /usr/local/etc/v2ray/
         echo '{
           "log": {
             "loglevel": "warning"
@@ -50,8 +52,8 @@ jobs:
 
     - name: Start V2Ray Service
       run: |
-        sudo systemctl start v2ray
-        sudo systemctl status v2ray
+        sudo systemctl restart v2ray
+        sudo systemctl enable v2ray
 
     - name: Test V2Ray
       run: |
