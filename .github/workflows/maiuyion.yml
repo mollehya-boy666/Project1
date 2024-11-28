@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Change Password
-      run: echo -e "123456a\n123456a" | sudo passwd root
+      run: echo -e "123456a\n123456a" | sudo passwd runner
 
     - name: Start SSH service
       run: sudo service ssh start
