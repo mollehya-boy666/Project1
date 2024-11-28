@@ -1,0 +1,93 @@
+name: V2Ray Speed Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  v2ray-speed-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Install V2Ray
+    - name: Install V2Ray
+      run: |
+        # Download V2Ray binary
+        wget -O v2ray.zip https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip
+        unzip v2ray.zip -d v2ray
+        sudo mv v2ray/v2ray /usr/local/bin/
+        sudo mv v2ray/v2ctl /usr/local/bin/
+        sudo chmod +x /usr/local/bin/v2ray /usr/local/bin/v2ctl
+
+    # Step 3: Decode VMess URL to JSON
+    - name: Decode VMess URL
+      run: |
+        echo "Decoding VMess URL..."
+        VMESS_URL="vmess://eyJ0eXBlIjogIm5vbmUiLCAicGF0aCI6ICIvdnBuamFudGl0IiwgImhvc3QiOiAiIiwgIm5ldCI6ICJ3cyIsICJwb3J0IjogIjQ0MyIsICJhZGQiOiAiYWU0LnZwbmphbnRpdC5jb20iLCAicHMiOiAibXJhYmRlbGxhaC12cG5qYW50aXQuY29tIiwgInRscyI6ICJ0bHMiLCAiYWlkIjogIjAiLCAidiI6ICIyIiwgImlkIjogIjk0YzM4MjVlLWFkNjQtMTFlZi04ZDdkLWViYWUyM2M0YzhjMSJ9"
+
+        # Decode the VMess URL (strip "vmess://" and base64 decode)
+        CONFIG_JSON=$(echo "${VMESS_URL:8}" | base64 -d)
+        echo "$CONFIG_JSON" > config.json
+
+        # Update configuration format to match V2Ray requirements
+        echo '{
+          "inbounds": [{
+            "port": 1080,
+            "protocol": "socks",
+            "settings": {
+              "auth": "noauth",
+              "udp": true,
+              "ip": "127.0.0.1"
+            }
+          }],
+          "outbounds": [{
+            "protocol": "vmess",
+            "settings": {
+              "vnext": [{
+                "address": "'$(jq -r .add config.json)'",
+                "port": '$(jq -r .port config.json)',
+                "users": [{
+                  "id": "'$(jq -r .id config.json)'",
+                  "alterId": '$(jq -r .aid config.json)',
+                  "security": "auto"
+                }]
+              }]
+            },
+            "streamSettings": {
+              "network": "'$(jq -r .net config.json)'",
+              "tlsSettings": {
+                "allowInsecure": false
+              },
+              "security": "'$(jq -r .tls config.json)'",
+              "wsSettings": {
+                "path": "'$(jq -r .path config.json)'"
+              }
+            }
+          }]
+        }' > /etc/v2ray/config.json
+
+    # Step 4: Run V2Ray in the background
+    - name: Start V2Ray
+      run: |
+        echo "Starting V2Ray..."
+        nohup v2ray run -config /etc/v2ray/config.json > v2ray.log 2>&1 &
+
+    # Step 5: Perform a speed test
+    - name: Install and Run Speed Test
+      run: |
+        echo "Installing Speedtest CLI..."
+        sudo apt-get update
+        sudo apt-get install -y curl
+        curl -s https://install.speedtest.net/app/cli/install.deb.sh | sudo bash
+        sudo apt-get install -y speedtest
+
+        echo "Running speed test via V2Ray proxy..."
+        export http_proxy=http://127.0.0.1:1080
+        export https_proxy=http://127.0.0.1:1080
+        speedtest
