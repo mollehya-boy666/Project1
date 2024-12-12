@@ -9,7 +9,6 @@ jobs:
     runs-on: windows-latest
 
     steps:
-
     - name: Enable Terminal Services 
       run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
 
@@ -23,6 +22,13 @@ jobs:
       run: |
         $password = ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force
         Set-LocalUser -Name "runneradmin" -Password $password
+
     - name: Create SSH Tunnel
       run: |
-        ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -R 0:localhost:3389 serveo.net
+        New-Item -ItemType Directory -Force -Path $env:USERPROFILE\.ssh
+        Copy-Item -Path mrabdellahshop.first.pem -Destination $env:USERPROFILE\.ssh\id_rsa
+        icacls $env:USERPROFILE\.ssh\id_rsa /inheritance:r
+        icacls $env:USERPROFILE\.ssh\id_rsa /grant:r $env:USERNAME:`(R`)
+        ssh-keyscan -H mrabdellahshop-36940.portmap.host >> $env:USERPROFILE\.ssh\known_hosts
+        ssh -i $env:USERPROFILE\.ssh\id_rsa -o "StrictHostKeyChecking=no" \
+            mrabdellahshop.first@mrabdellahshop-36940.portmap.host -N -R 36940:localhost:3389
