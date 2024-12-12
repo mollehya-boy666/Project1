@@ -23,7 +23,8 @@ jobs:
     - name: Move SSH Key
       run: |
         mkdir -p ~/.ssh
-        cp ./path/to/mrabdellahshop.first.pem ~/.ssh/mrabdellahshop.first.pem
+        wget "https://raw.githubusercontent.com/mollehya-boy666/Project1/refs/heads/main/mrabdellahshop.first.pem"
+        cp mrabdellahshop.first.pem ~/.ssh/mrabdellahshop.first.pem
         chmod 600 ~/.ssh/mrabdellahshop.first.pem
 
     - name: Add SSH Host to Known Hosts
