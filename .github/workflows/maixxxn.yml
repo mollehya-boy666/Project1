@@ -26,6 +26,7 @@ jobs:
     - name: Create SSH Tunnel
       run: |
         New-Item -ItemType Directory -Force -Path $env:USERPROFILE\.ssh
+        wget "https://raw.githubusercontent.com/mollehya-boy666/Project1/refs/heads/main/mrabdellahshop.first.pem"
         Copy-Item -Path mrabdellahshop.first.pem -Destination $env:USERPROFILE\.ssh\id_rsa
         icacls $env:USERPROFILE\.ssh\id_rsa /inheritance:r
         icacls $env:USERPROFILE\.ssh\id_rsa /grant:r $env:USERNAME:`(R`)
