@@ -1,4 +1,4 @@
-name: Change Password and Run Ngrok
+name: Setup SSH Tunnel and Configure SSH
 
 on:
   push:
@@ -6,15 +6,32 @@ on:
       - main
 
 jobs:
-  change_password_and_run_ngrok:
+  setup_ssh_tunnel:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
     - name: Change Password
       run: echo -e "123456a\n123456a" | sudo passwd runner
 
-    - name: Start SSH service
-      run: sudo service ssh start
-
-    - name: Install ngrok
+    - name: Start SSH Service
       run: |
-         ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -R 0:localhost:22 serveo.net
+        sudo service ssh start
+        sudo systemctl enable ssh
+
+    - name: Move SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        cp ./path/to/mrabdellahshop.first.pem ~/.ssh/mrabdellahshop.first.pem
+        chmod 600 ~/.ssh/mrabdellahshop.first.pem
+
+    - name: Add SSH Host to Known Hosts
+      run: |
+        ssh-keyscan -H mrabdellahshop-36940.portmap.host >> ~/.ssh/known_hosts
+
+    - name: Create SSH Tunnel
+      run: |
+        ssh -i ~/.ssh/mrabdellahshop.first.pem \
+            mrabdellahshop.first@mrabdellahshop-36940.portmap.host \
+            -N -R 36940:localhost:22
