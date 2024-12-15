@@ -1,0 +1,20 @@
+name: Proxy Test Workflow
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  test-proxy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Test Proxy Connectivity
+      run: |
+        echo "Testing proxy connectivity..."
+        curl -x http://mrabdellahshop-48885.portmap.host:48885 https://api.ipify.org
