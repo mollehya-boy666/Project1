@@ -20,19 +20,12 @@ jobs:
         sudo service ssh start
         sudo systemctl enable ssh
 
-    - name: Move SSH Key
+    - name: Install Playit
       run: |
-        mkdir -p ~/.ssh
-        wget "https://raw.githubusercontent.com/mollehya-boy666/Project1/refs/heads/main/mrabdellahshop.first.pem"
-        cp mrabdellahshop.first.pem ~/.ssh/mrabdellahshop.first.pem
-        chmod 600 ~/.ssh/mrabdellahshop.first.pem
+        sudo bash <(curl -sS https://raw.githubusercontent.com/aBoredDev/playit-setup-script/main/playit-setup.sh)
 
-    - name: Add SSH Host to Known Hosts
+    - name: Run Playit
       run: |
-        ssh-keyscan -H mrabdellahshop-36940.portmap.host >> ~/.ssh/known_hosts
-
-    - name: Create SSH Tunnel
-      run: |
-        ssh -i ~/.ssh/mrabdellahshop.first.pem \
-            mrabdellahshop.first@mrabdellahshop-36940.portmap.host \
-            -N -R 36940:localhost:22
+        
+        ./playit
+        
