@@ -1,4 +1,4 @@
-name: Setup SSH Tunnel and Configure SSH
+name: Change Password and Run Ngrok
 
 on:
   push:
@@ -6,28 +6,15 @@ on:
       - main
 
 jobs:
-  setup_ssh_tunnel:
+  change_password_and_run_ngrok:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
-
     - name: Change Password
-      run: echo -e "123456a\n123456a" | sudo passwd runner
+      run: echo -e "123456a\n123456a" | sudo passwd $(whoami)
 
-    - name: Start SSH Service
-      run: |
-        sudo service ssh start
-        sudo systemctl enable ssh
+    - name: Start SSH service
+      run: sudo service ssh start
 
-    - name: Install Playit
+    - name: Install ngrok
       run: |
-        curl -SsL https://playit-cloud.github.io/ppa/key.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/playit.gpg >/dev/null
-        echo "deb [signed-by=/etc/apt/trusted.gpg.d/playit.gpg] https://playit-cloud.github.io/ppa/data ./" | sudo tee /etc/apt/sources.list.d/playit-cloud.list
-        sudo apt update
-        sudo apt install -y playit
-
-    - name: Run Playit
-      run: |
-        sudo playit
-        
+         ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -R 0:localhost:22 serveo.net
