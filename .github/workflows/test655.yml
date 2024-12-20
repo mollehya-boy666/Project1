@@ -1,0 +1,39 @@
+name: Open Tunnel on Port 80
+
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  open-tunnel:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14'
+
+    - name: Install localtunnel
+      run: npm install -g localtunnel
+
+    - name: Start localtunnel
+      run: lt --port 80 > localtunnel-url.txt &
+    
+    - name: Wait for localtunnel to start
+      run: sleep 5
+
+    - name: Get localtunnel URL
+      run: cat localtunnel-url.txt
+
+    - name: Print localtunnel public URL
+      run: |
+        TUNNEL_URL=$(cat localtunnel-url.txt | grep -o 'https://[^ ]*')
+        echo "localtunnel URL: $TUNNEL_URL"
