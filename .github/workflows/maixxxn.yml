@@ -25,4 +25,4 @@ jobs:
         Set-LocalUser -Name "runneradmin" -Password $password
     - name: Create SSH Tunnel
       run: |
-        ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -R 0:localhost:3389 serveo.net
+        ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -p 443 -R0:localhost:22 qr@a.pinggy.io
